@@ -2,7 +2,7 @@
 title: "Practical Machine Learning (Project)"
 author: "TD"
 date: "Monday, February 16, 2015"
-output: html_document
+output: pdf_document
 ---
 
 
@@ -107,8 +107,8 @@ predictions<-predict(model, newdata=testing)
 confusionMatrix(predictions, testing$classe)
 ```
 
-```{r cache=TRUE, message=FALSE}
 ####Model2 (method="randomForest")
+```{r cache=TRUE, message=FALSE}
 predictions2<-predict(model2, newdata=testing, type="class")
 confusionMatrix(predictions2, testing$classe)
 ```
@@ -120,8 +120,8 @@ predict_new<-predict(model2, newdata=Test_final, type="class")
 predict_new
 ```
 
-##Appendix: Tree plot for the final model that using the method of 'rpart'
-```{r fig.width=5, fig.height=5, cache=TRUE}
+##Appendix: Tree plot of the final model that using the method of 'rpart'
+```{r fig.width=8, fig.height=6, cache=TRUE}
 fancyRpartPlot(model$finalModel)
 ```
 
