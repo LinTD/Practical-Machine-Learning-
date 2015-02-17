@@ -19,9 +19,9 @@ dim(setTrain);dim(setTest)
 
 
 library(dplyr)
-Train<-select(setTrain, contains("accel"),classe)
+Train<-select(setTrain, contains("accel"),raw_timestamp_part_1,raw_timestamp_part_2, classe)
 names(Train)
-Test<-select(setTest, contains("accel"))
+Test<-select(setTest, contains("accel"),raw_timestamp_part_1,raw_timestamp_part_2)
 names(Test)
 
 VarMtest<-which(colSums(is.na(Test))>0)
@@ -52,9 +52,7 @@ dim(training);dim(testing)
 summary(training$classe)
 
 ##Fit Models
-####1. Predicting with trees
-
-
+####1. Predicting with trees using 'rpart'
 library(rattle)
 library(rpart.plot)
 
@@ -63,14 +61,39 @@ print(model,digits=3)
 print(model$finalModel, digits=3)
 fancyRpartPlot(model$finalModel)
 
+####2. Predicting with random forest
+library(randomForest)
+model2<- randomForest(classe~., data=training,proximity=TRUE)
+print(model2,digits=3)
+
+
+
+##Model evaluation
+####Model1 (method="rpart")
 predictions<-predict(model, newdata=testing)
 confusionMatrix(predictions, testing$classe)
 
-library(randomForest)
-model2<- randomForest(classe~., data=training)
-print(model2,digits=3)
-print(model2$finalModel, digits=3)
-
+####Model2 (method="randomForest")
 predictions2<-predict(model2, newdata=testing, type="class")
 confusionMatrix(predictions2, testing$classe)
+
+
+
+
+# check if a data folder exists; if not then create one
+if (!file.exists("data")) {dir.create("data")}
+setwd("E:\\Coursera\\Practical Machine Learning\\project\\data")
+
+predictTest <- predict(model2, newdata=Test_final)
+predictTest
+
+answers = rep("A", 20)
+pml_write_files = function(x){
+  n = length(x)
+  for(i in 1:n){
+    filename = paste0("problem_id_",i,".txt")
+    write.table(x[i],file=filename,quote=FALSE,row.names=FALSE,col.names=FALSE)
+  }
+}
+pml_write_files(predictTest)
 
